@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple, dependable parking desk for Katre Cycle Stand.">
+    <title>Katre Park | Parking Desk</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="app-shell no-print">
+        <aside class="sidebar">
+            <a class="brand" href="#entryTab" aria-label="Katre Park home">
+                <span class="brand-mark" aria-hidden="true">K</span>
+                <span><strong>Katre</strong><small>Cycle Stand</small></span>
+            </a>
+
+            <nav class="side-nav" aria-label="Parking actions">
+                <button class="tab-btn active" data-tab="entryTab" type="button">
+                    <span class="nav-icon" aria-hidden="true">↗</span> New entry
+                </button>
+                <button class="tab-btn" data-tab="checkoutTab" type="button">
+                    <span class="nav-icon" aria-hidden="true">↙</span> Checkout
+                </button>
+                <button id="viewRecordsBtn" class="nav-btn" type="button">
+                    <span class="nav-icon" aria-hidden="true">▤</span> Parking records
+                </button>
+            </nav>
+
+            <div class="sidebar-note">
+                <span class="status-dot" id="statusDot"></span>
+                <div>
+                    <strong id="systemStatusText">Checking system...</strong>
+                    <small>Parking desk is ready to use</small>
+                </div>
+            </div>
+        </aside>
+
+        <main class="workspace">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Katre Cycle Stand</p>
+                    <h1>Good <span id="timeGreeting">day</span>, attendant.</h1>
+                    <p class="topbar-subtitle">Keep the queue moving with a quick entry or checkout.</p>
+                </div>
+                <div class="topbar-meta">
+                    <div class="live-time" aria-live="polite">
+                        <span class="live-time-label">Today</span>
+                        <strong id="liveDate">--</strong>
+                        <span id="liveClock">--:--</span>
+                    </div>
+                    <button id="mobileRecordsBtn" class="icon-btn" type="button" aria-label="Open parking records" title="Parking records">▤</button>
+                </div>
+            </header>
+
+            <section class="overview-grid" aria-label="Parking overview">
+                <article class="availability-card bike-card">
+                    <div class="card-heading">
+                        <span class="vehicle-icon bike-icon" aria-hidden="true">⌁</span>
+                        <span>Two-wheelers</span>
+                    </div>
+                    <div class="availability-number"><strong id="bikeAvailability">50</strong><span>spots free</span></div>
+                    <div class="meter"><span id="bikeMeter"></span></div>
+                    <p><span id="bikeOccupancy">0</span> of 50 occupied</p>
+                </article>
+                <article class="availability-card car-card">
+                    <div class="card-heading">
+                        <span class="vehicle-icon car-icon" aria-hidden="true">▰</span>
+                        <span>Four-wheelers</span>
+                    </div>
+                    <div class="availability-number"><strong id="carAvailability">20</strong><span>spots free</span></div>
+                    <div class="meter"><span id="carMeter"></span></div>
+                    <p><span id="carOccupancy">0</span> of 20 occupied</p>
+                </article>
+                <article class="summary-card">
+                    <p class="summary-label">Vehicles on site</p>
+                    <strong id="activeParkingValue">0</strong>
+                    <div class="summary-line"><span id="todayEntriesValue">0</span> entries today <span class="dot-separator">•</span> <span id="todayExitsValue">0</span> exits</div>
+                </article>
+            </section>
+
+            <section class="desk-grid">
+                <div class="work-panel">
+                    <div id="entryTab" class="tab-content active">
+                        <div class="panel-heading">
+                            <div>
+                                <p class="eyebrow">Vehicle arrival</p>
+                                <h2>Create a parking slip</h2>
+                            </div>
+                            <span class="step-pill">Step 1 of 1</span>
+                        </div>
+                        <form id="parkingForm" novalidate>
+                            <div class="vehicle-options" role="group" aria-label="Choose vehicle type">
+                                <label class="vehicle-choice selected" data-vehicle-choice="Bike">
+                                    <input type="radio" name="vehicleTypeChoice" value="Bike" checked>
+                                    <span class="choice-symbol" aria-hidden="true">⌁</span>
+                                    <span><strong>Bike</strong><small>₹10 / 12 hrs</small></span>
+                                </label>
+                                <label class="vehicle-choice" data-vehicle-choice="Car">
+                                    <input type="radio" name="vehicleTypeChoice" value="Car">
+                                    <span class="choice-symbol" aria-hidden="true">▰</span>
+                                    <span><strong>Car</strong><small>₹30 / 12 hrs</small></span>
+                                </label>
+                            </div>
+                            <select id="vehicleType" class="sr-only" aria-label="Vehicle type" required>
+                                <option value="Bike">Bike</option>
+                                <option value="Car">Car</option>
+                            </select>
+
+                            <div class="form-group form-group-large">
+                                <label for="vehicleNumber">Vehicle registration number</label>
+                                <input type="text" id="vehicleNumber" placeholder="MH 12 AB 1234" required autocomplete="off" autocapitalize="characters" maxlength="14">
+                                <p class="field-hint">Enter the registration as shown on the number plate.</p>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="date">Entry date</label>
+                                    <input type="date" id="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="time">Entry time</label>
+                                    <input type="time" id="time" required>
+                                </div>
+                            </div>
+
+                            <button type="button" id="printBtn" class="primary-btn">
+                                <span aria-hidden="true">+</span> Create slip &amp; print
+                            </button>
+                        </form>
+                    </div>
+
+                    <div id="checkoutTab" class="tab-content hidden">
+                        <div class="panel-heading">
+                            <div>
+                                <p class="eyebrow">Vehicle departure</p>
+                                <h2>Complete a checkout</h2>
+                            </div>
+                            <span class="step-pill step-exit">Exit desk</span>
+                        </div>
+                        <div class="form-group form-group-large">
+                            <label for="scanInput">Ticket code or vehicle number</label>
+                            <div class="search-input-wrap">
+                                <input type="text" id="scanInput" placeholder="KCS-2026... or MH12AB1234" autocomplete="off" autocapitalize="characters">
+                                <button type="button" id="findTicketBtn" class="find-btn">Find ticket</button>
+                            </div>
+                            <p class="field-hint">Scan the QR code or enter a ticket ID / vehicle number.</p>
+                        </div>
+
+                        <div id="checkoutResult" class="checkout-result hidden">
+                            <div class="checkout-title-row"><h3>Checkout summary</h3><span class="status-badge status-active">Ready</span></div>
+                            <div class="summary-list">
+                                <div class="summary-row"><span>Vehicle</span><strong id="coVehicle">-</strong></div>
+                                <div class="summary-row"><span>Vehicle type</span><strong id="coType">-</strong></div>
+                                <div class="summary-row"><span>Parking slot</span><strong id="coSlot">-</strong></div>
+                                <div class="summary-row"><span>Entry time</span><strong id="coEntry">-</strong></div>
+                                <div class="summary-row"><span>Exit time</span><strong id="coExit">-</strong></div>
+                                <div class="summary-row"><span>Duration</span><strong id="coDuration">-</strong></div>
+                            </div>
+                            <div class="price-display"><span>Amount to collect</span><strong id="coPrice">₹0</strong></div>
+                            <button type="button" id="completeCheckoutBtn" class="primary-btn checkout-btn">Confirm checkout</button>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="right-rail">
+                    <section class="rail-card">
+                        <div class="rail-heading"><h2>Today at a glance</h2><button id="railRecordsBtn" class="text-btn" type="button">See all</button></div>
+                        <div class="mini-stat"><span>New entries</span><strong id="railEntriesValue">0</strong></div>
+                        <div class="mini-stat"><span>Completed exits</span><strong id="railExitsValue">0</strong></div>
+                        <div class="mini-stat mini-stat-income"><span>Collection</span><strong id="railRevenueValue">₹0</strong></div>
+                    </section>
+                    <section class="rail-card rates-card">
+                        <p class="eyebrow">Parking rates</p>
+                        <h2>Simple and clear</h2>
+                        <div class="rate-row"><span>Bike</span><strong>₹10 <small>per 12 hrs</small></strong></div>
+                        <div class="rate-row"><span>Car</span><strong>₹30 <small>per 12 hrs</small></strong></div>
+                        <p class="rates-note">Each additional 12-hour block is charged at the same rate.</p>
+                    </section>
+                    <section class="help-card">
+                        <span aria-hidden="true">?</span>
+                        <div><strong>Need a quick lookup?</strong><p>Use Checkout to find an active slip by its number plate.</p></div>
+                    </section>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <div id="recordsModal" class="modal hidden no-print" role="dialog" aria-modal="true" aria-labelledby="recordsTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div><p class="eyebrow">Parking desk</p><h2 id="recordsTitle">Records &amp; collection</h2></div>
+                <button id="closeModalBtn" class="close-btn" type="button" aria-label="Close records">×</button>
+            </div>
+            <div class="dashboard-stats" id="dashboardStats"></div>
+            <div class="records-filters">
+                <div class="filter-group"><label for="filterDate">Date</label><input type="date" id="filterDate"></div>
+                <div class="filter-group"><label for="filterStatus">Status</label><select id="filterStatus"><option value="All">All activity</option><option value="ACTIVE">Currently parked</option><option value="COMPLETED">Checked out</option></select></div>
+                <div class="filter-group filter-search"><label for="filterSearch">Search</label><input type="text" id="filterSearch" placeholder="Vehicle or ticket code"></div>
+                <button id="clearRecordsBtn" class="clear-btn" type="button">Clear local records</button>
+            </div>
+            <div class="records-table-container">
+                <table class="records-table">
+                    <thead><tr><th>Ticket ID</th><th>Vehicle no.</th><th>Type</th><th>Slot</th><th>Entry</th><th>Exit</th><th>Duration</th><th>Fee</th><th>Status</th></tr></thead>
+                    <tbody id="recordsTbody"></tbody>
+                </table>
+                <div id="noRecordsMsg" class="no-records hidden">No parking records match these filters.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="printArea" class="print-only">
+        <div class="slip">
+            <h2 class="slip-title">Katre Cycle Stand</h2>
+            <p class="slip-subtitle">Parking receipt</p>
+            <div class="slip-divider"></div>
+            <div class="slip-details">
+                <div class="slip-row"><span>Type</span><strong id="slipType">-</strong></div>
+                <div class="slip-row"><span>Slot</span><strong id="slipSlot">-</strong></div>
+                <div class="slip-row"><span>Vehicle no.</span><strong id="slipNumber">-</strong></div>
+                <div class="slip-row"><span>Date</span><strong id="slipDate">-</strong></div>
+                <div class="slip-row"><span>Time</span><strong id="slipTime">-</strong></div>
+            </div>
+            <div class="slip-divider"></div>
+            <div class="slip-ticket"><span>Ticket ID</span><strong id="slipTicketId"></strong></div>
+            <div class="qr-container"><div id="qrcode"></div></div>
+            <div class="slip-divider"></div>
+            <p class="slip-footer">Thank you. Please keep this slip safe.</p>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+    <script src="script.js"></script>
+</body>
+</html>
